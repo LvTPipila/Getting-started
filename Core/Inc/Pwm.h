@@ -104,6 +104,7 @@ typedef struct
 
     /* Polarity of the channel */
     uint32  Polarity;
+    uint16  DutyCycle;
 
 }Pwm_ConfigType;
 

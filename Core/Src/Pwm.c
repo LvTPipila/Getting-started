@@ -65,7 +65,7 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
     temp = TIM1->CCER;
     temp &= ~(TIM_CCER_CC1E + TIM_CCER_CC1P);   // Change polarity parameter for kCondifPtr
     /* Set defaut DT of 50% */
-    TIM1->CCR1 = (0xFFFF >> 1);
+    TIM1->CCR1 = Pwm_kConfigPtr->DutyCycle;
     /* Enable channel 1 */
     temp |= (TIM_CCER_CC1E);
     TIM1->CCER = temp;
