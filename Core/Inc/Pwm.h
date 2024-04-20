@@ -7,6 +7,7 @@
 #define PWM_H
 /********************************* [includes] *********************************/
 #include "Std_Types.h"
+#include "stm32f302x8.h"
 //#include "Pwm_cfg.h"
 /******************************* [global macros] ******************************/
 
@@ -92,8 +93,7 @@ typedef enum
 typedef struct
 {
     /* HW specific */
-    /* What do I need to initialize? 
-     * Duty cycle */
+    Pwm_ChannelType HwChannel;  /* Channel to configure */
     uint32  CompareMode;   /* Set PWM channel as input capture or output. */
 
     /* PWM mode as Input and Output PWM, consider both scenarios. For 
@@ -105,6 +105,9 @@ typedef struct
     /* Polarity of the channel */
     uint32  Polarity;
     uint16  DutyCycle;
+
+    /* Structure of TIM registers */
+    TIM_TypeDef *ModReg;
 
 }Pwm_ConfigType;
 

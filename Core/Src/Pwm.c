@@ -49,7 +49,7 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
 
     /* RIGHT NOW, ONLY DONE FOR CHANNEL 1 OF TIM1 */
     /* Set PWM Capture/Compare. */
-    temp = TIM1->CCMR1;
+    temp = Pwm_kConfigPtr->ModReg->CCMR1;
     temp &= ~(CCMR1_CC1S);  /* Clearing CC1S bits sets channel as output. */
     /* Set PWM mode */
     temp &= ~(CCMR1_OC1M);
@@ -58,28 +58,28 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
     temp &= ~(CCMR1_OC1PE);
     temp |= (PWM_PRELOAD_ENABLE << CCMR1_OC1PE_POS);
     /* Write config in CCMR1 */
-    TIM1->CCMR1 = temp;
+    Pwm_kConfigPtr->ModReg->CCMR1 = temp;
 
     /* Set necessary config in CCER register */
     /* First, clear the bits */
-    temp = TIM1->CCER;
+    temp = Pwm_kConfigPtr->ModReg->CCER;
     temp &= ~(TIM_CCER_CC1E + TIM_CCER_CC1P);   // Change polarity parameter for kCondifPtr
     /* Set defaut DT of 50% */
-    TIM1->CCR1 = Pwm_kConfigPtr->DutyCycle;
+    Pwm_kConfigPtr->ModReg->CCR1 = Pwm_kConfigPtr->DutyCycle;
     /* Enable channel 1 */
     temp |= (TIM_CCER_CC1E);
-    TIM1->CCER = temp;
+    Pwm_kConfigPtr->ModReg->CCER = temp;
 
     /* Main output enable */
-    TIM1->BDTR |= TIM_BDTR_MOE;
+    Pwm_kConfigPtr->ModReg->BDTR |= TIM_BDTR_MOE;
     /* Start PWM */
-    TIM1->CR1 |= TIM_CR1_CEN;
+    Pwm_kConfigPtr->ModReg->CR1 |= TIM_CR1_CEN;
 }
 
 /**
- * @brief Service to set PWM duty cycle.      
+ * @brief Service sets the duty cycle of a PWM channel.
  *
- * param  Channel number to set the duty cycle.
+ * param  ChannelNumber to set the duty cycle.
  *
  * param  DutyCycle is the duty cycle to be set.
  *
@@ -87,7 +87,30 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
  */
 void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
 {
-    // TODO
+    /* If duty cycle is 0% or 100%, DT has to be set to PWM_HIGH or
+     * PWM_LOW depending on the configured polarity of the channel.
+     *
+     * AbsDutyCycle = ((uint32)AbsPeriodTime * RelativeDutyCycle) >> 15
+     */
+    if(DutyCycle >= 0x8000U)
+    {
+        /* Set the duty cycle to 100% */
+        TIM1->CCR1 = 0xFFFF;
+    }
+    /* Set defaut DT of 50% */
+    TIM1->CCR1 = DutyCycle;
+}
+
+/**
+ * @brief Service sets the PWM output to the configured idle state.
+ *
+ * param  ChannelNumber to set to idle state.
+ *
+ * retval None.
+ */
+void Pwm_SetOutputToIdle(Pwm_ChannelType ChannelNumber)
+{
+    // TODO:
 }
 
 /**
