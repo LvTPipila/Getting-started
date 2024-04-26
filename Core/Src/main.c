@@ -47,12 +47,11 @@ TIM_HandleTypeDef htim2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN PFP */
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM_Init(void);
-static void MX_TIM2_Init(void);
-/* USER CODE BEGIN PFP */
-
+//static void MX_TIM2_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -99,15 +98,21 @@ int main(void)
     /* Start the PWM TIM2_CH1 */
     //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 
+    uint8 first_DTChange = 0;
+
     while (1)
     {
         /* USER CODE END WHILE */
         HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
         HAL_Delay(500);
         
-        /* change duty cycle every half a second */
-        //Pwm_SetDutyCycle(1, 0x8000);
+        if(first_DTChange == 0)
+        {
+            /* change duty cycle every half a second */
+            Pwm_SetDutyCycle(1, (0xFFFF >> 2));
+            first_DTChange = 1u;
 
+        }
         /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */
@@ -198,8 +203,8 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM16;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /*Configure GPIO pin for PWM on TIM2_CH1, PA15 */
-    GPIO_InitStruct.Pin = GPIO_PIN_15;
+    /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
+    GPIO_InitStruct.Pin = GPIO_PIN_1;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -235,20 +240,25 @@ static void MX_TIM_Init(void)
     TIM16_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
+    /* Initialize both channels common information */
     for (uint8 k = 0; k < 2; k++)
     {
-        Pwm_Channels[k].HwChannel = ((Pwm_ChannelType) 1);
         Pwm_Channels[k].Mode = PWM_MODE_1;
         Pwm_Channels[k].CompareMode = PWM_CC_SELECT_OUTPUT;
         Pwm_Channels[k].PreloadEnable = PWM_PRELOAD_ENABLE;
         Pwm_Channels[k].Polarity = PWM_CC_ACTIVE_HIGH;
         Pwm_Channels[k].DutyCycle = (0xFFFF >> 1);
-        Pwm_Channels[k].ModReg = TIM16;
-        /* Call the Pwm_Init API */
-        Pwm_Init(&Pwm_Channels[k]);
     }
+
+    Pwm_Channels[0].ModReg = TIM2;
+    Pwm_Channels[0].HwChannel = ((Pwm_ChannelType) 2);
+    Pwm_Channels[1].ModReg = TIM16;
+    Pwm_Channels[1].HwChannel = ((Pwm_ChannelType) 1);
+    /* Call the Pwm_Init API */
+    Pwm_Init(Pwm_Channels);
 }
 
+#if (0)
 static void MX_TIM2_Init(void)
 {
     TIM_ClockConfigTypeDef sClockSourceConfig = {0};
@@ -299,6 +309,8 @@ static void MX_TIM2_Init(void)
         Error_Handler();
     }
 }
+#endif
+
 /* USER CODE END 4 */
 
 /**
