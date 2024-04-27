@@ -7,7 +7,7 @@
 #define PWM_H
 /********************************* [includes] *********************************/
 #include "Std_Types.h"
-#include "stm32f302x8.h"
+#include "Pwm_MemMap.h"
 //#include "Pwm_cfg.h"
 /******************************* [global macros] ******************************/
 

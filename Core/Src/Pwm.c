@@ -28,6 +28,8 @@ const Pwm_ConfigType *Pwm_kConfigPtr = NULL;
 void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
 {
     uint32 temp;
+    uint32 tempReg;
+
     /* DON'T DOs
      * Call Init during running operation. */
 
@@ -47,33 +49,42 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
         return;
     }
 
-    /* RIGHT NOW, ONLY DONE FOR CHANNEL 1 OF TIM1 */
-    /* Set PWM Capture/Compare. */
-    temp = Pwm_kConfigPtr->ModReg->CCMR1;
-    temp &= ~(CCMR1_CC1S);  /* Clearing CC1S bits sets channel as output. */
-    /* Set PWM mode */
-    temp &= ~(CCMR1_OC1M);
-    temp |= (Pwm_kConfigPtr->Mode << CCMR1_OC1M_POS);
-    /* Enable preload register. */
-    temp &= ~(CCMR1_OC1PE);
-    temp |= (PWM_PRELOAD_ENABLE << CCMR1_OC1PE_POS);
-    /* Write config in CCMR1 */
-    Pwm_kConfigPtr->ModReg->CCMR1 = temp;
+    /* NEED TO REPLACE 2 FOR A MACRO THAT FOR NUMBER OF PWM
+     * CHANNELS THAT NEED TO BE CONFIGURED 
+     * */
+    for(uint8 k = 0; k < 2; k++)
+    {
+        /* Register only contains information of 2 channels per register */
+        uint32 channelOffSet = ((Pwm_kConfigPtr[k].HwChannel << 3U) - 8U);
 
-    /* Set necessary config in CCER register */
-    /* First, clear the bits */
-    temp = Pwm_kConfigPtr->ModReg->CCER;
-    temp &= ~(TIM_CCER_CC1E + TIM_CCER_CC1P);   // Change polarity parameter for kCondifPtr
-    /* Set defaut DT of 50% */
-    Pwm_kConfigPtr->ModReg->CCR1 = Pwm_kConfigPtr->DutyCycle;
-    /* Enable channel 1 */
-    temp |= (TIM_CCER_CC1E);
-    Pwm_kConfigPtr->ModReg->CCER = temp;
+        tempReg = Pwm_kConfigPtr[k].ModReg->CCMR1;
+        temp = 0U;
+        /* Set PWM mode */
+        temp = (Pwm_kConfigPtr[k].Mode << CCMR1_OC1M_POS);
+        /* Enable preload register. */
+        temp &= ~(CCMR1_OC1PE);
+        temp |= (PWM_PRELOAD_ENABLE << CCMR1_OC1PE_POS);
+        /* Clear 8 bits of config depending on channel number. */
+        tempReg &= ~(0xFFU << channelOffSet);
+        tempReg |= (temp << channelOffSet);
+        /* Write config in CCMR1 */
+        Pwm_kConfigPtr[k].ModReg->CCMR1 = tempReg;
 
-    /* Main output enable */
-    Pwm_kConfigPtr->ModReg->BDTR |= TIM_BDTR_MOE;
-    /* Start PWM */
-    Pwm_kConfigPtr->ModReg->CR1 |= TIM_CR1_CEN;
+        /* Set necessary config in CCER register */
+        /* First, clear the bits */
+        temp = Pwm_kConfigPtr[k].ModReg->CCER;
+        temp &= ~(TIM_CCER_CC1E + TIM_CCER_CC1P);   // Change polarity parameter for kCondifPtr
+        /* Set defaut DT of 50% */
+        Pwm_kConfigPtr[k].ModReg->CCR1 = Pwm_kConfigPtr[k].DutyCycle;
+        /* Enable channel 1 */
+        temp |= (TIM_CCER_CC1E);
+        Pwm_kConfigPtr[k].ModReg->CCER = temp;
+
+        /* Main output enable */
+        Pwm_kConfigPtr[k].ModReg->BDTR |= TIM_BDTR_MOE;
+        /* Start PWM */
+        Pwm_kConfigPtr[k].ModReg->CR1 |= TIM_CR1_CEN;
+    }
 }
 
 /**
@@ -95,10 +106,10 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
     if(DutyCycle >= 0x8000U)
     {
         /* Set the duty cycle to 100% */
-        TIM1->CCR1 = 0xFFFF;
+        Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = 0xFFFF;
     }
     /* Set defaut DT of 50% */
-    TIM1->CCR1 = DutyCycle;
+    Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = DutyCycle;
 }
 
 /**
