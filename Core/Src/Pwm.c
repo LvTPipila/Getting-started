@@ -71,31 +71,7 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
         tempReg |= (temp << channelOffset);
         Pwm_kConfigPtr[k].ModReg->CCMR1 = tempReg;
 
-        switch(Pwm_kConfigPtr[k].HwChannel)
-        {
-            case 1:
-                {
-                    Pwm_kConfigPtr[k].ModReg->CCR1 = Pwm_kConfigPtr[k].DutyCycle;
-                    break;
-                }
-            case 2:
-                {
-                    Pwm_kConfigPtr[k].ModReg->CCR2 = Pwm_kConfigPtr[k].DutyCycle;
-                    break;
-                }
-            case 3:
-                {
-                    Pwm_kConfigPtr[k].ModReg->CCR3 = Pwm_kConfigPtr[k].DutyCycle;
-                    break;
-                }
-            case 4:
-                {
-                    Pwm_kConfigPtr[k].ModReg->CCR4 = Pwm_kConfigPtr[k].DutyCycle;
-                    break;
-                }
-            default:
-                break;
-        }
+        Pwm_SetDutyCycle(k, Pwm_kConfigPtr[k].DutyCycle);
 
         channelOffset = ((Pwm_kConfigPtr[k].HwChannel << 2U) - 4U);
         /* Set necessary config in CCER register */
@@ -135,13 +111,50 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
      *
      * AbsDutyCycle = ((uint32)AbsPeriodTime * RelativeDutyCycle) >> 15
      */
-    if(DutyCycle >= 0x8000U)
+    if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH) ||
+    (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW))
     {
         /* Set the duty cycle to 100% */
-        Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = 0xFFFF;
+        DutyCycle = PWM_ZERO_PERCENT;
+        return;
     }
-    /* Set defaut DT of 50% */
-    Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = DutyCycle;
+    else if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW) ||
+    (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH))
+    {
+        DutyCycle = PWM_HUNDRED_PERCENT;
+        return;
+    }
+    else
+    {
+        /* Do nothing */
+    }
+
+    
+    switch(Pwm_kConfigPtr[ChannelNumber].HwChannel)
+    {
+        case 1:
+            {
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = DutyCycle;
+                break;
+            }
+        case 2:
+            {
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR2 = DutyCycle;
+                break;
+            }
+        case 3:
+            {
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR3 = DutyCycle;
+                break;
+            }
+        case 4:
+            {
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR4 = DutyCycle;
+                break;
+            }
+        default:
+            break;
+    }
 }
 
 /**

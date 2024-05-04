@@ -23,6 +23,10 @@
 #define PWM_PRELOAD_ENABLE      (0x1U)
 #define PWM_PRELOAD_DISABLE     (0x0U)
 
+/* PWM Duty Cycle percentage */
+#define PWM_HUNDRED_PERCENT     (0xFFFFU)
+#define PWM_ZERO_PERCENT        (0U)
+
 /* Create some masks for CCER register */
 
 /* Create some masks for the CCMRx registers */
