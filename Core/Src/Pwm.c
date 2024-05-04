@@ -34,11 +34,11 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
      * Call Init during running operation. */
 
     /* DOs
-     * Init variables of Pwm_ConfigType structure.*/
-    /* Set default values for the DT.*/
-    /* Set polarity of channels and modes.*/
-    /* Disable all notifications.*/
-    /* Run DeInit before Init for re-initialization. */
+     * Set default values for the DT.
+     * Set polarity of channels and modes.
+     * Disable all notifications
+     * Run DeInit before Init for re-initialization.
+     */
 
     /* Copy configuration */
     if(ConfigPtr != NULL)
@@ -51,11 +51,13 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
 
     /* NEED TO REPLACE 2 FOR A MACRO THAT FOR NUMBER OF PWM
      * CHANNELS THAT NEED TO BE CONFIGURED 
-     * */
+     */
     for(uint8 k = 0; k < 2; k++)
     {
         /* Register only contains information of 2 channels per register */
-        uint32 channelOffSet = ((Pwm_kConfigPtr[k].HwChannel << 3U) - 8U);
+        uint32 channelOffset;
+
+        channelOffset = ((Pwm_kConfigPtr[k].HwChannel << 3U) - 8U);
 
         tempReg = Pwm_kConfigPtr[k].ModReg->CCMR1;
         temp = 0U;
@@ -63,25 +65,55 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
         temp = (Pwm_kConfigPtr[k].Mode << CCMR1_OC1M_POS);
         /* Enable preload register. */
         temp &= ~(CCMR1_OC1PE);
-        temp |= (PWM_PRELOAD_ENABLE << CCMR1_OC1PE_POS);
-        /* Clear 8 bits of config depending on channel number. */
-        tempReg &= ~(0xFFU << channelOffSet);
-        tempReg |= (temp << channelOffSet);
-        /* Write config in CCMR1 */
+        temp |= (Pwm_kConfigPtr[k].PreloadEnable << CCMR1_OC1PE_POS);
+        /* CCMR1 has 8 config bits per channel */
+        tempReg &= ~(0xFFU << channelOffset);
+        tempReg |= (temp << channelOffset);
         Pwm_kConfigPtr[k].ModReg->CCMR1 = tempReg;
 
+        switch(Pwm_kConfigPtr[k].HwChannel)
+        {
+            case 1:
+                {
+                    Pwm_kConfigPtr[k].ModReg->CCR1 = Pwm_kConfigPtr[k].DutyCycle;
+                    break;
+                }
+            case 2:
+                {
+                    Pwm_kConfigPtr[k].ModReg->CCR2 = Pwm_kConfigPtr[k].DutyCycle;
+                    break;
+                }
+            case 3:
+                {
+                    Pwm_kConfigPtr[k].ModReg->CCR3 = Pwm_kConfigPtr[k].DutyCycle;
+                    break;
+                }
+            case 4:
+                {
+                    Pwm_kConfigPtr[k].ModReg->CCR4 = Pwm_kConfigPtr[k].DutyCycle;
+                    break;
+                }
+            default:
+                break;
+        }
+
+        channelOffset = ((Pwm_kConfigPtr[k].HwChannel << 2U) - 4U);
         /* Set necessary config in CCER register */
-        /* First, clear the bits */
-        temp = Pwm_kConfigPtr[k].ModReg->CCER;
-        temp &= ~(TIM_CCER_CC1E + TIM_CCER_CC1P);   // Change polarity parameter for kCondifPtr
-        /* Set defaut DT of 50% */
-        Pwm_kConfigPtr[k].ModReg->CCR1 = Pwm_kConfigPtr[k].DutyCycle;
+        tempReg = Pwm_kConfigPtr[k].ModReg->CCER;
+        temp = 0U;
+        temp = (Pwm_kConfigPtr[k].Polarity << TIM_CCER_CC1P_Pos);           
         /* Enable channel 1 */
         temp |= (TIM_CCER_CC1E);
-        Pwm_kConfigPtr[k].ModReg->CCER = temp;
+        /* CCER has 4 config bits per channel */
+        tempReg &= ~(0xFU << channelOffset);
+        tempReg |= (temp << channelOffset);
+        Pwm_kConfigPtr[k].ModReg->CCER = tempReg;
 
-        /* Main output enable */
-        Pwm_kConfigPtr[k].ModReg->BDTR |= TIM_BDTR_MOE;
+        if(IS_TIM_BREAK_INSTANCE(Pwm_kConfigPtr[k].ModReg))
+        {
+            /* Main output enable */
+            Pwm_kConfigPtr[k].ModReg->BDTR |= TIM_BDTR_MOE;
+        }
         /* Start PWM */
         Pwm_kConfigPtr[k].ModReg->CR1 |= TIM_CR1_CEN;
     }
