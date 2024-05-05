@@ -35,7 +35,6 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
 
     /* DOs
      * Set default values for the DT.
-     * Set polarity of channels and modes.
      * Disable all notifications
      * Run DeInit before Init for re-initialization.
      */
@@ -111,45 +110,49 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
      *
      * AbsDutyCycle = ((uint32)AbsPeriodTime * RelativeDutyCycle) >> 15
      */
+    uint32 AbsDutyCycle;
+
+    /* SWS_Pwm_00014 */
     if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH) ||
     (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW))
     {
         /* Set the duty cycle to 100% */
         DutyCycle = PWM_ZERO_PERCENT;
-        return;
     }
     else if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW) ||
     (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH))
     {
         DutyCycle = PWM_HUNDRED_PERCENT;
-        return;
     }
     else
     {
         /* Do nothing */
     }
 
+    /* SWS_Pwm_00059 */
+    AbsDutyCycle = ((uint32)Pwm_kConfigPtr[ChannelNumber].ModReg->ARR * DutyCycle) >> 15;
     
+    /* SWS_Pwm_00013 */
     switch(Pwm_kConfigPtr[ChannelNumber].HwChannel)
     {
         case 1:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = DutyCycle;
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = AbsDutyCycle;
                 break;
             }
         case 2:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR2 = DutyCycle;
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR2 = AbsDutyCycle;
                 break;
             }
         case 3:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR3 = DutyCycle;
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR3 = AbsDutyCycle;
                 break;
             }
         case 4:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR4 = DutyCycle;
+                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR4 = AbsDutyCycle;
                 break;
             }
         default:

@@ -24,7 +24,7 @@
 #define PWM_PRELOAD_DISABLE     (0x0U)
 
 /* PWM Duty Cycle percentage */
-#define PWM_HUNDRED_PERCENT     (0xFFFFU)
+#define PWM_HUNDRED_PERCENT     (0x8000U)
 #define PWM_ZERO_PERCENT        (0U)
 
 /* Create some masks for CCER register */
@@ -107,6 +107,7 @@ typedef struct
     uint32  PreloadEnable;       /* Preload register enable/disable */
 
     /* Polarity of the channel */
+    Pwm_PeriodType  Period;
     uint32  Polarity;
     uint16  DutyCycle;
 

@@ -246,8 +246,9 @@ static void MX_TIM_Init(void)
         Pwm_Channels[k].Mode = PWM_MODE_1;
         Pwm_Channels[k].CompareMode = PWM_CC_SELECT_OUTPUT;
         Pwm_Channels[k].PreloadEnable = PWM_PRELOAD_ENABLE;
+        Pwm_Channels[k].Period = (Pwm_PeriodType) 0xFFFF;
         Pwm_Channels[k].Polarity = PWM_CC_ACTIVE_HIGH;
-        Pwm_Channels[k].DutyCycle = (0xFFFF >> 1);
+        Pwm_Channels[k].DutyCycle = (0x8000 >> 1);
     }
 
     Pwm_Channels[0].ModReg = TIM2;
