@@ -97,7 +97,7 @@ typedef enum
 typedef struct
 {
     /* HW specific */
-    Pwm_ChannelType HwChannel;  /* Channel to configure */
+    uint8   HwChannel;  /* Channel to configure */
     uint32  CompareMode;   /* Set PWM channel as input capture or output. */
 
     /* PWM mode as Input and Output PWM, consider both scenarios. For 
@@ -113,6 +113,14 @@ typedef struct
 
     /* Structure of TIM registers */
     TIM_TypeDef *ModReg;
+}Pwm_ChannelConfigType;
+
+/* Struct containing initialization data for the PWM driver. */
+typedef struct
+{
+    const Pwm_ChannelConfigType* ChannelConfigPtr;
+
+    Pwm_ChannelType PwmMaxChannels;
 
 }Pwm_ConfigType;
 

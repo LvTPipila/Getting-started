@@ -29,6 +29,8 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
 {
     uint32 temp;
     uint32 tempReg;
+    Pwm_ChannelType maxChannels;
+    const Pwm_ChannelConfigType* localPwmChannelPtr;
 
     /* DON'T DOs
      * Call Init during running operation. */
@@ -51,46 +53,50 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
     /* NEED TO REPLACE 2 FOR A MACRO THAT FOR NUMBER OF PWM
      * CHANNELS THAT NEED TO BE CONFIGURED 
      */
-    for(uint8 k = 0; k < 2; k++)
+    maxChannels = ConfigPtr->PwmMaxChannels;
+    localPwmChannelPtr = ConfigPtr->ChannelConfigPtr;
+
+    for(uint8 channel = 0; channel < maxChannels; channel++)
     {
         /* Register only contains information of 2 channels per register */
         uint32 channelOffset;
+        channelOffset = ((localPwmChannelPtr->HwChannel << 3U) - 8U);
 
-        channelOffset = ((Pwm_kConfigPtr[k].HwChannel << 3U) - 8U);
-
-        tempReg = Pwm_kConfigPtr[k].ModReg->CCMR1;
+        tempReg = localPwmChannelPtr->ModReg->CCMR1;
         temp = 0U;
         /* Set PWM mode */
-        temp = (Pwm_kConfigPtr[k].Mode << CCMR1_OC1M_POS);
+        temp = (localPwmChannelPtr->Mode << CCMR1_OC1M_POS);
         /* Enable preload register. */
         temp &= ~(CCMR1_OC1PE);
-        temp |= (Pwm_kConfigPtr[k].PreloadEnable << CCMR1_OC1PE_POS);
+        temp |= (localPwmChannelPtr->PreloadEnable << CCMR1_OC1PE_POS);
         /* CCMR1 has 8 config bits per channel */
         tempReg &= ~(0xFFU << channelOffset);
         tempReg |= (temp << channelOffset);
-        Pwm_kConfigPtr[k].ModReg->CCMR1 = tempReg;
+        localPwmChannelPtr->ModReg->CCMR1 = tempReg;
 
-        Pwm_SetDutyCycle(k, Pwm_kConfigPtr[k].DutyCycle);
+        Pwm_SetDutyCycle(channel, localPwmChannelPtr->DutyCycle);
 
-        channelOffset = ((Pwm_kConfigPtr[k].HwChannel << 2U) - 4U);
+        channelOffset = ((localPwmChannelPtr->HwChannel << 2U) - 4U);
         /* Set necessary config in CCER register */
-        tempReg = Pwm_kConfigPtr[k].ModReg->CCER;
+        tempReg = localPwmChannelPtr->ModReg->CCER;
         temp = 0U;
-        temp = (Pwm_kConfigPtr[k].Polarity << TIM_CCER_CC1P_Pos);           
+        temp = (localPwmChannelPtr->Polarity << TIM_CCER_CC1P_Pos);           
         /* Enable channel 1 */
         temp |= (TIM_CCER_CC1E);
         /* CCER has 4 config bits per channel */
         tempReg &= ~(0xFU << channelOffset);
         tempReg |= (temp << channelOffset);
-        Pwm_kConfigPtr[k].ModReg->CCER = tempReg;
+        localPwmChannelPtr->ModReg->CCER = tempReg;
 
-        if(IS_TIM_BREAK_INSTANCE(Pwm_kConfigPtr[k].ModReg))
+        if(IS_TIM_BREAK_INSTANCE(localPwmChannelPtr->ModReg))
         {
             /* Main output enable */
-            Pwm_kConfigPtr[k].ModReg->BDTR |= TIM_BDTR_MOE;
+            localPwmChannelPtr->ModReg->BDTR |= TIM_BDTR_MOE;
         }
         /* Start PWM */
-        Pwm_kConfigPtr[k].ModReg->CR1 |= TIM_CR1_CEN;
+        localPwmChannelPtr->ModReg->CR1 |= TIM_CR1_CEN;
+
+        localPwmChannelPtr++;
     }
 }
 
@@ -110,17 +116,20 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
      *
      * AbsDutyCycle = ((uint32)AbsPeriodTime * RelativeDutyCycle) >> 15
      */
+    const Pwm_ChannelConfigType* localChannelPtr;
     uint32 AbsDutyCycle;
 
+    localChannelPtr = ((Pwm_kConfigPtr->ChannelConfigPtr) + ChannelNumber);
+    
     /* SWS_Pwm_00014 */
-    if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH) ||
-    (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW))
+    if((DutyCycle == PWM_ZERO_PERCENT && localChannelPtr->Polarity == PWM_CC_ACTIVE_HIGH) ||
+    (DutyCycle >= PWM_HUNDRED_PERCENT && localChannelPtr->Polarity == PWM_CC_ACTIVE_LOW))
     {
         /* Set the duty cycle to 100% */
         DutyCycle = PWM_ZERO_PERCENT;
     }
-    else if((DutyCycle == PWM_ZERO_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_LOW) ||
-    (DutyCycle >= PWM_HUNDRED_PERCENT && Pwm_kConfigPtr[ChannelNumber].Polarity == PWM_CC_ACTIVE_HIGH))
+    else if((DutyCycle == PWM_ZERO_PERCENT && localChannelPtr->Polarity == PWM_CC_ACTIVE_LOW) ||
+    (DutyCycle >= PWM_HUNDRED_PERCENT && localChannelPtr->Polarity == PWM_CC_ACTIVE_HIGH))
     {
         DutyCycle = PWM_HUNDRED_PERCENT;
     }
@@ -130,29 +139,29 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
     }
 
     /* SWS_Pwm_00059 */
-    AbsDutyCycle = ((uint32)Pwm_kConfigPtr[ChannelNumber].ModReg->ARR * DutyCycle) >> 15;
+    AbsDutyCycle = ((uint32)localChannelPtr->ModReg->ARR * DutyCycle) >> 15;
     
     /* SWS_Pwm_00013 */
-    switch(Pwm_kConfigPtr[ChannelNumber].HwChannel)
+    switch(localChannelPtr->HwChannel)
     {
         case 1:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR1 = AbsDutyCycle;
+                localChannelPtr->ModReg->CCR1 = AbsDutyCycle;
                 break;
             }
         case 2:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR2 = AbsDutyCycle;
+                localChannelPtr->ModReg->CCR2 = AbsDutyCycle;
                 break;
             }
         case 3:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR3 = AbsDutyCycle;
+                localChannelPtr->ModReg->CCR3 = AbsDutyCycle;
                 break;
             }
         case 4:
             {
-                Pwm_kConfigPtr[ChannelNumber].ModReg->CCR4 = AbsDutyCycle;
+                localChannelPtr->ModReg->CCR4 = AbsDutyCycle;
                 break;
             }
         default:

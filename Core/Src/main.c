@@ -43,7 +43,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-TIM_HandleTypeDef htim2;
+// TIM_HandleTypeDef htim2;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -218,7 +218,6 @@ static void MX_TIM_Init(void)
     /* Start codignt the initialization of the TIM1 module for my PWM. */
     TIM_Base_InitTypeDef TIM2_InitStruct = {0};
     TIM_Base_InitTypeDef TIM16_InitStruct = {0};
-    Pwm_ConfigType Pwm_Channels[2];
 
     /* TIMER CONFIG WILL BE MOVED TO GPT DRIVER LATER ON */
     /* Enable TIM16 clock */
@@ -240,21 +239,41 @@ static void MX_TIM_Init(void)
     TIM16_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
-    /* Initialize both channels common information */
-    for (uint8 k = 0; k < 2; k++)
-    {
-        Pwm_Channels[k].Mode = PWM_MODE_1;
-        Pwm_Channels[k].CompareMode = PWM_CC_SELECT_OUTPUT;
-        Pwm_Channels[k].PreloadEnable = PWM_PRELOAD_ENABLE;
-        Pwm_Channels[k].Period = (Pwm_PeriodType) 0xFFFF;
-        Pwm_Channels[k].Polarity = PWM_CC_ACTIVE_HIGH;
-        Pwm_Channels[k].DutyCycle = (0x8000 >> 1);
-    }
+    const Pwm_ChannelConfigType Pwm_kChannelConfig0[ ] =
+        {
+            {
+                2u,
+                PWM_CC_SELECT_OUTPUT,
+                PWM_MODE_1,
+                PWM_PRELOAD_ENABLE,
+                0xFFFFu,
+                PWM_CC_ACTIVE_HIGH,
+                (0x8000u >> 1),
+                TIM2
+            },
 
-    Pwm_Channels[0].ModReg = TIM2;
-    Pwm_Channels[0].HwChannel = ((Pwm_ChannelType) 2);
-    Pwm_Channels[1].ModReg = TIM16;
-    Pwm_Channels[1].HwChannel = ((Pwm_ChannelType) 1);
+            {
+                1u,
+                PWM_CC_SELECT_OUTPUT,
+                PWM_MODE_1,
+                PWM_PRELOAD_ENABLE,
+                0xFFFFu,
+                PWM_CC_ACTIVE_HIGH,
+                (0x8000u >> 1),
+                TIM16
+            }
+        };
+
+    const Pwm_ConfigType Pwm_Channels[1] =
+        {
+            {
+
+                Pwm_kChannelConfig0,
+
+                2u,
+            }
+        };
+    
     /* Call the Pwm_Init API */
     Pwm_Init(Pwm_Channels);
 }
