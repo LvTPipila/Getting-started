@@ -112,7 +112,7 @@ typedef struct
     uint16  DutyCycle;
 
     /* Structure of TIM registers */
-    TIM_TypeDef *ModReg;
+    TIM_TypeDef*    ModReg;
 }Pwm_ChannelConfigType;
 
 /* Struct containing initialization data for the PWM driver. */

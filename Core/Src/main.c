@@ -108,10 +108,10 @@ int main(void)
         
         if(first_DTChange == 0)
         {
-            /* change duty cycle every half a second */
+            /* change duty cycle every half a second 
             Pwm_SetDutyCycle(1, (0xFFFF >> 2));
             first_DTChange = 1u;
-
+            */
         }
         /* USER CODE BEGIN 3 */
     }
@@ -246,36 +246,31 @@ static void MX_TIM_Init(void)
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                0xFFFFu,
+                (0xFFFFu),
                 PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 1),
+                (0x8000u >> 3),
                 TIM2
             },
-
             {
                 1u,
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                0xFFFFu,
+                (0xFFFFu),
                 PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 1),
+                (0x8000u >> 2),
                 TIM16
-            }
+            },
         };
 
-    const Pwm_ConfigType Pwm_Channels[1] =
+    const Pwm_ConfigType Pwm_Channels =
         {
-            {
-
-                Pwm_kChannelConfig0,
-
-                2u,
-            }
+            Pwm_kChannelConfig0,
+            2u,
         };
     
     /* Call the Pwm_Init API */
-    Pwm_Init(Pwm_Channels);
+    Pwm_Init(&Pwm_Channels);
 }
 
 #if (0)

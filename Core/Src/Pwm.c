@@ -139,7 +139,7 @@ void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle)
     }
 
     /* SWS_Pwm_00059 */
-    AbsDutyCycle = ((uint32)localChannelPtr->ModReg->ARR * DutyCycle) >> 15;
+    AbsDutyCycle = ((uint32)localChannelPtr->ModReg->ARR * DutyCycle) >> 15u;
     
     /* SWS_Pwm_00013 */
     switch(localChannelPtr->HwChannel)
