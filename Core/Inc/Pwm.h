@@ -128,22 +128,29 @@ typedef struct
 
 /********************** [external function declarations] **********************/
 /**
- * @brief Service for PWM initialization.
+ * @brief   Service for PWM initialization.
  *
- * param  ConfigPtr is a pointer to configureation for PWM channels.
+ * service ID   0x00
  *
- * retval none.
+ * param (in)   ConfigPtr is a pointer to configuration for PWM channels.
+ *
+ * param (out)  none.
+ *
+ * retval   none.
  */
 void Pwm_Init(const Pwm_ConfigType* ConfigPtr);
 
 /**
  * @brief Service sets the duty cycle of the PWM channel.
  *
- * param  ChannelNumber is the channel to be set.
+ * service ID   0x02
  *
- * param  DutyCycle is the DT to be set.
+ * param (in)   ChannelNumber is the channel to be set.
+ *              DutyCycle is the relative duty cycle to be set.
  *
- * retval none.
+ * param (out)  none.
+ *
+ * retval   none.
  */
 void Pwm_SetDutyCycle(Pwm_ChannelType ChannelNumber, uint16 DutyCycle);
 

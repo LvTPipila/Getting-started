@@ -41,7 +41,6 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
      * Run DeInit before Init for re-initialization.
      */
 
-    /* Copy configuration */
     if(ConfigPtr != NULL)
     {
         Pwm_kConfigPtr = ConfigPtr;
@@ -50,9 +49,6 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
         return;
     }
 
-    /* NEED TO REPLACE 2 FOR A MACRO THAT FOR NUMBER OF PWM
-     * CHANNELS THAT NEED TO BE CONFIGURED 
-     */
     maxChannels = ConfigPtr->PwmMaxChannels;
     localPwmChannelPtr = ConfigPtr->ChannelConfigPtr;
 
@@ -74,6 +70,8 @@ void Pwm_Init(const Pwm_ConfigType* ConfigPtr)
         tempReg |= (temp << channelOffset);
         localPwmChannelPtr->ModReg->CCMR1 = tempReg;
 
+        localPwmChannelPtr->ModReg->ARR = localPwmChannelPtr->Period;
+        
         Pwm_SetDutyCycle(channel, localPwmChannelPtr->DutyCycle);
 
         channelOffset = ((localPwmChannelPtr->HwChannel << 2U) - 4U);
