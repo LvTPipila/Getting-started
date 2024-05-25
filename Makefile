@@ -39,6 +39,7 @@ Core/Src/main.c \
 Core/Src/stm32f3xx_it.c \
 Core/Src/stm32f3xx_hal_msp.c \
 Core/Src/system_stm32f3xx.c \
+Core/Src/Pwm.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim_ex.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c \
@@ -63,7 +64,7 @@ startup_stm32f302x8.s
 #######################################
 # binaries
 #######################################
-GCC_PATH = /opt/gcc-arm-none-eabi-9-2019-q4-major/bin
+GCC_PATH = ~/opt/gcc-arm-none-eabi-9-2019-q4-major/bin
 PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
@@ -72,11 +73,13 @@ CC = $(GCC_PATH)/$(PREFIX)gcc
 AS = $(GCC_PATH)/$(PREFIX)gcc -x assembler-with-cpp
 CP = $(GCC_PATH)/$(PREFIX)objcopy
 SZ = $(GCC_PATH)/$(PREFIX)size
+DB = $(GCC_PATH)/$(PREFIX)gdb
 else
 CC = $(PREFIX)gcc
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
+DB = $(PREFIX)gdb
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
@@ -149,6 +152,12 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 
 flash:
 	st-flash write $(BUILD_DIR)/$(TARGET).bin 0x08000000
+
+openocd:
+	openocd -f board/st_nucleo_f3.cfg
+
+debug:
+	$(DB) -x gdb.init $(BUILD_DIR)/$(TARGET).elf
 
 #######################################
 # build the application

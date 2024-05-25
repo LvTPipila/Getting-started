@@ -1,0 +1,9 @@
+define gdbInit
+    target extended-remote localhost:3333
+    monitor reset halt
+end
+
+define bmain
+    break main
+    continue
+end
