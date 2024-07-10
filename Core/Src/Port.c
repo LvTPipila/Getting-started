@@ -5,11 +5,13 @@
 
 /********************************* [includes] *********************************/
 #include "Port.h"
+#include "stm32f302x8.h"
 /********************************** [macros] **********************************/
 
 /********************************* [typedefs] *********************************/
 
 /************************** [variable declaration] ****************************/
+const Port_ConfigType *Port_kConfigPtr = NULL;
 
 /********************** [external function declarations] **********************/
 /**
@@ -30,6 +32,19 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
     // Activaiton of internal pull-up/pull-down
     // Pin drive mode (push-pull/open-drain)
     // Other micro specific properties
+
+    uint32 temp;
+    uint32 tempReg;
+
+    /* Copy pointer to local variable */
+    if(ConfigPtr != NULL)
+    {
+        Port_kConfigPtr = ConfigPtr;
+    } else
+    {
+        return;
+    }
+
 }
 
 /**
