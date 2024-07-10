@@ -217,7 +217,7 @@ static void MX_TIM_Init(void)
 
     TIM2_InitStruct.Prescaler = 0x1u;                   // Prescale 2.
     TIM2_InitStruct.CounterMode = TIM_COUNTERMODE_UP;
-    TIM2_InitStruct.Period = 0xF;
+    TIM2_InitStruct.Period = (Pwm_PeriodType) 0xF;
     TIM2_InitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     TIM2_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM2, &TIM2_InitStruct);
@@ -237,7 +237,7 @@ static void MX_TIM_Init(void)
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
+                (0xFFFFu), // Period
                 PWM_CC_ACTIVE_HIGH,
                 (0x8000u >> 3),
                 TIM2
@@ -247,7 +247,7 @@ static void MX_TIM_Init(void)
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
+                (0xFFFFu), // Period
                 PWM_CC_ACTIVE_HIGH,
                 (0x8000u >> 2),
                 TIM16

@@ -1,6 +1,6 @@
-/********************************* [includes] *********************************/
+/******************************** [general info] ******************************/
 /*
- * File:    template.h
+ * File:    Template.h
  */
 
 #ifndef TEMPLATE_H
@@ -15,11 +15,13 @@
 
 /********************** [external function declarations] **********************/
 /**
- * @brief Add a brief description of this function/interface.
+ * @brief   Add a brief description of this function/interface.
  *
- * param  Add description of parameter value.
+ * param (in)   Add description of parameter value.
  *
- * retval Add name description of return value.
+ * param (out)  Add description of parameter value.
+ *
+ * retval   Add name description of return value.
  */
 void template_fcn(void);
 #endif /* if !define(TEMPLATE_H) */
