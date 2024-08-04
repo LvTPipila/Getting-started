@@ -7,9 +7,10 @@
 #define PORT_H
 /********************************* [includes] *********************************/
 #include "Std_Types.h"
+#include "stm32f302x8.h"
 
 /******************************* [global macros] ******************************/
-/* Port pins */
+/* Symbolic name of port pins */
 #define PORT_PIN_0      ((Port_PinType)0x0001U)
 #define PORT_PIN_1      ((Port_PinType)0x0002U)
 #define PORT_PIN_2      ((Port_PinType)0x0004U)
@@ -28,6 +29,30 @@
 #define PORT_PIN_15     ((Port_PinType)0x8000U)
 #define PORT_PIN_ALL    ((Port_PinType)0xFFFFU)
 
+/* Configuration mode of port pins */
+#define PIN_MODE_INPUT      (0x0U)
+#define PIN_MODE_OUTPUT     (0x1U)
+#define PIN_MODE_ALTERNATE  (0x2U)
+#define PIN_MODE_ANALOG     (0x3U)
+
+/* Configuration of pull-up/pull-down option */
+#define MODE_NO_PULL        (0x0U)
+#define MODE_PULL_UP        (0x1U)
+#define MODE_PULL_DOWN      (0x2U)
+
+/* Configuration of output type options */
+#define MODE_PUSH_PULL  (0x0U)
+#define MODE_OPEN_DRAIN (0x1U)
+
+/* Configureation of output speed options */
+#define SPEED_FREQ_LOW      (0x0U)
+#define SPEED_FREQ_MEDIUM   (0x1U)
+#define SPEED_FREQ_HIGH     (0x3U)
+
+/* Bit Set Reset Register starting positions */
+#define GPIO_BSRR_BS    (0x00U)
+#define GPIO_BSRR_BR    (0x10U)
+
 /****************************** [global typedefs] *****************************/
 /* Data type for the symbolic name of port pin. */
 typedef uint32  Port_PinType;
@@ -35,8 +60,8 @@ typedef uint32  Port_PinType;
 /* Possible direction of a port pin. */
 typedef enum
 {
-    PORT_PIN_IN = 0x00,
-    PORT_PIN_OUT = 0x01
+    PORT_PIN_IN = 0x00U,
+    PORT_PIN_OUT = 0x01U
 }Port_PinDirectionType;
 
 /* Different port pin modes. */
@@ -45,12 +70,20 @@ typedef uint32  Port_PinModeType;
 /* Structure with necessary infor to configure port channel. */
 typedef struct
 {
-    // Copy structure from pwm
+    Port_PinType Pin;
+    Port_PinDirectionType Direction;
+    uint32 Mode;
+    uint32 PullMode;
+    uint32 OutputMode;
+    // uint32 Alternate;
+
     GPIO_TypeDef* ModReg;
-}Port_ChannelConfigType;
+}Port_PinConfigType;
 /* Type of external data structure containing the initialization data. */
 typedef struct 
 {
+    const Port_PinConfigType* PinConfigPtr;
+    uint8 PortMaxConfigPins;
 }Port_ConfigType;
 /************************** [variable declaration] ****************************/
 

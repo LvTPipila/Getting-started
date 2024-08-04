@@ -179,14 +179,34 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
 
-    /*Configure GPIO pin : LD2_Pin */
+    /*Configure GPIO pin : LD2_Pin
     GPIO_InitStruct.Pin = LD2_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+    */
 
-    /*Configure GPIO pin for PWM on TIM16_CH1, PB4 */
+    const Port_PinConfigType Port_kChannelConfig0 [] =
+        {
+            {
+                LD2_Pin,
+                PORT_PIN_OUT,
+                GPIO_MODE_OUTPUT_PP,
+                MODE_NO_PULL,
+                MODE_PUSH_PULL,
+                GPIOA
+            },
+        };
+
+    const Port_ConfigType Port_ConfigPorts =
+        {
+            Port_kChannelConfig0,
+            1U
+        };
+    Port_Init(&Port_ConfigPorts);
+
+    /* Configure GPIO pin for PWM on TIM16_CH1, PB4
     GPIO_InitStruct.Pin = GPIO_PIN_4;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
