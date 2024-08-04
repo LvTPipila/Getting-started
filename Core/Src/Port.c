@@ -51,9 +51,6 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
     localPortConfigPtr = ConfigPtr->PinConfigPtr;
     portMaxPins = ConfigPtr->PortMaxConfigPins;
 
-    /* Reset all pins for the moment. */
-    localPortConfigPtr->ModReg->BSRR = (PORT_PIN_ALL << GPIO_BSRR_BR);
-
     for(uint8 configPin = 0; configPin < portMaxPins; configPin++)
     {
         position = localPortConfigPtr->Pin;
