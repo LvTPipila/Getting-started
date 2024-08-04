@@ -195,7 +195,7 @@ static void MX_GPIO_Init(void)
                 GPIO_MODE_OUTPUT_PP,
                 MODE_NO_PULL,
                 MODE_PUSH_PULL,
-                GPIOA
+                LD2_GPIO_Port
             },
         };
 
