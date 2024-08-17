@@ -115,7 +115,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 
             tempReg = localPortConfigPtr->ModReg->MODER;
             tempReg &= (~(GPIO_MODER_MODER0 << (offset * 2U)));
-            tempReg |= (localPortConfigPtr->Direction << (offset * 2U));
+            tempReg |= (localPortConfigPtr->PinMode << (offset * 2U));
             localPortConfigPtr->ModReg->MODER = tempReg;
         }else
         {
