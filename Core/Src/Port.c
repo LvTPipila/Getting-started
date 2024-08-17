@@ -87,6 +87,14 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
         }else if(localPortConfigPtr->Direction == PORT_PIN_OUT)
         {
             /* Configure output */
+            if(localPortConfigPtr->PinMode == PIN_MODE_ALTERNATE)
+            {
+                tempReg = localPortConfigPtr->ModReg->AFR[offset >> 3U];
+                /* 4 is the number of bits in the register to config alternate fcn */
+                tempReg &= (~(0xFU << ((offset & 7U) * 4U)));
+                tempReg |= ((localPortConfigPtr->Alternate) << ((offset & 7U) * 4U));
+                localPortConfigPtr->ModReg->AFR[offset >> 3U] = tempReg;
+            }
             /* Configure open drain / push-pull register */
             tempReg = localPortConfigPtr->ModReg->OTYPER;
             tempReg &= (~(1U << offset));

@@ -30,10 +30,10 @@
 #define PORT_PIN_ALL    ((Port_PinType)0xFFFFU)
 
 /* Configuration mode of port pins */
-#define PIN_MODE_INPUT      (0x0U)
-#define PIN_MODE_OUTPUT     (0x1U)
-#define PIN_MODE_ALTERNATE  (0x2U)
-#define PIN_MODE_ANALOG     (0x3U)
+#define PIN_MODE_DIGITAL_INPUT  (0x0U)
+#define PIN_MODE_DIGITAL_OUTPUT (0x1U)
+#define PIN_MODE_ALTERNATE      (0x2U)
+#define PIN_MODE_ANALOG         (0x3U)
 
 /* Configuration of pull-up/pull-down option */
 #define MODE_NO_PULL        (0x0U)
@@ -52,6 +52,24 @@
 /* Bit Set Reset Register starting positions */
 #define GPIO_BSRR_BS    (0x00U)
 #define GPIO_BSRR_BR    (0x10U)
+
+/* Alternate function listing */
+#define AF_0    (0x0U)
+#define AF_1    (0x1U)
+#define AF_2    (0x2U)
+#define AF_3    (0x3U)
+#define AF_4    (0x4U)
+#define AF_5    (0x5U)
+#define AF_6    (0x6U)
+#define AF_7    (0x7U)
+#define AF_8    (0x8U)
+#define AF_9    (0x9U)
+#define AF_10   (0xAU)
+#define AF_11   (0xBU)
+#define AF_12   (0xCU)
+#define AF_13   (0xDU)
+#define AF_14   (0xEU)
+#define AF_15   (0xFU)
 
 /****************************** [global typedefs] *****************************/
 /* Data type for the symbolic name of port pin. */
@@ -72,11 +90,11 @@ typedef struct
 {
     Port_PinType Pin;
     Port_PinDirectionType Direction;
-    uint32 Mode;
+    Port_PinModeType PinMode;
+    uint32 Alternate;
     uint32 PullMode;
     uint32 OutputMode;
-    // uint32 Alternate;
-
+    uint32 Speed;
     GPIO_TypeDef* ModReg;
 }Port_PinConfigType;
 /* Type of external data structure containing the initialization data. */

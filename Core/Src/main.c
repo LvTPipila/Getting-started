@@ -184,27 +184,39 @@ static void MX_GPIO_Init(void)
             {
                 LD2_Pin,
                 PORT_PIN_OUT,
-                GPIO_MODE_OUTPUT_PP,
+                PIN_MODE_DIGITAL_OUTPUT,
+                0U,
                 MODE_NO_PULL,
                 MODE_PUSH_PULL,
+                0U,
                 LD2_GPIO_Port
+            },
+            {
+                GPIO_PIN_4,
+                PORT_PIN_OUT,
+                PIN_MODE_ALTERNATE,
+                AF_1,
+                MODE_NO_PULL,
+                MODE_PUSH_PULL,
+                GPIO_SPEED_FREQ_LOW,
+                GPIOB,
             },
         };
 
     const Port_ConfigType Port_ConfigPorts =
         {
             Port_kChannelConfig0,
-            1U
+            2U
         };
     Port_Init(&Port_ConfigPorts);
 
-    /* Configure GPIO pin for PWM on TIM16_CH1, PB4
+    /* Configure GPIO pin for PWM on TIM16_CH1, PB4 
     GPIO_InitStruct.Pin = GPIO_PIN_4;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM16;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct); */
 
     /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
     GPIO_InitStruct.Pin = GPIO_PIN_1;
