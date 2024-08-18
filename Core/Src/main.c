@@ -179,28 +179,48 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
 
-    /*Configure GPIO pin : LD2_Pin */
-    GPIO_InitStruct.Pin = LD2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+    const Port_PinConfigType Port_kChannelConfig0 [] =
+        {
+            {
+                LD2_Pin,
+                PORT_PIN_OUT,
+                PIN_MODE_DIGITAL_OUTPUT,
+                0U,
+                MODE_NO_PULL,
+                MODE_PUSH_PULL,
+                0U,
+                LD2_GPIO_Port
+            },
+            {
+                /* Configure GPIO pin for PWM on TIM16_CH1, PB4 */
+                GPIO_PIN_4,
+                PORT_PIN_OUT,
+                PIN_MODE_ALTERNATE,
+                AF_1,
+                MODE_NO_PULL,
+                MODE_PUSH_PULL,
+                GPIO_SPEED_FREQ_LOW,
+                GPIOB,
+            },
+            {
+                /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
+                GPIO_PIN_1,
+                PORT_PIN_OUT,
+                PIN_MODE_ALTERNATE,
+                AF_1,
+                MODE_NO_PULL,
+                MODE_PUSH_PULL,
+                GPIO_SPEED_FREQ_LOW,
+                GPIOA,
+            },
+        };
 
-    /*Configure GPIO pin for PWM on TIM16_CH1, PB4 */
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM16;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
-    GPIO_InitStruct.Pin = GPIO_PIN_1;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    const Port_ConfigType Port_ConfigPorts =
+        {
+            Port_kChannelConfig0,
+            3U
+        };
+    Port_Init(&Port_ConfigPorts);
 }
 
 /* USER CODE BEGIN 4 */
@@ -217,7 +237,7 @@ static void MX_TIM_Init(void)
 
     TIM2_InitStruct.Prescaler = 0x1u;                   // Prescale 2.
     TIM2_InitStruct.CounterMode = TIM_COUNTERMODE_UP;
-    TIM2_InitStruct.Period = 0xF;
+    TIM2_InitStruct.Period = (Pwm_PeriodType) 0xF;
     TIM2_InitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     TIM2_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM2, &TIM2_InitStruct);
@@ -237,7 +257,7 @@ static void MX_TIM_Init(void)
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
+                (0xFFFFu), // Period
                 PWM_CC_ACTIVE_HIGH,
                 (0x8000u >> 3),
                 TIM2
@@ -247,7 +267,7 @@ static void MX_TIM_Init(void)
                 PWM_CC_SELECT_OUTPUT,
                 PWM_MODE_1,
                 PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
+                (0xFFFFu), // Period
                 PWM_CC_ACTIVE_HIGH,
                 (0x8000u >> 2),
                 TIM16
