@@ -41,6 +41,7 @@ Core/Src/stm32f3xx_hal_msp.c \
 Core/Src/system_stm32f3xx.c \
 Core/Src/Port.c \
 Core/Src/Pwm.c \
+Core/Src/IoHwAb.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim_ex.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c \
@@ -65,7 +66,7 @@ startup_stm32f302x8.s
 #######################################
 # binaries
 #######################################
-GCC_PATH = /opt/gcc-arm-none-eabi-9-2019-q4-major/bin
+GCC_PATH = ~/opt/gcc-arm-none-eabi-9-2019-q4-major/bin
 PREFIX = arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
