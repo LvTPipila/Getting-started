@@ -89,7 +89,7 @@ int main(void)
     MX_GPIO_Init();
     /* USER CODE BEGIN 2 */
     MX_TIM_Init();
-    //MX_TIM2_Init();
+    IoHwAb_Init();
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -157,7 +157,6 @@ static void MX_GPIO_Init(void)
 
     /* GPIO Ports Clock Enable */
     __HAL_RCC_GPIOC_CLK_ENABLE();
-    //__HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
@@ -179,6 +178,7 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
 
+<<<<<<< HEAD
     const Port_PinConfigType Port_kChannelConfig0 [] =
         {
             {
@@ -221,6 +221,8 @@ static void MX_GPIO_Init(void)
             3U
         };
     Port_Init(&Port_ConfigPorts);
+=======
+>>>>>>> Move port and pwm init to IoHwAb
 }
 
 /* USER CODE BEGIN 4 */
@@ -250,38 +252,6 @@ static void MX_TIM_Init(void)
     TIM16_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
-    const Pwm_ChannelConfigType Pwm_kChannelConfig0[ ] =
-        {
-            {
-                2u,
-                PWM_CC_SELECT_OUTPUT,
-                PWM_MODE_1,
-                PWM_PRELOAD_ENABLE,
-                (0xFFFFu), // Period
-                PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 3),
-                TIM2
-            },
-            {
-                1u,
-                PWM_CC_SELECT_OUTPUT,
-                PWM_MODE_1,
-                PWM_PRELOAD_ENABLE,
-                (0xFFFFu), // Period
-                PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 2),
-                TIM16
-            },
-        };
-
-    const Pwm_ConfigType Pwm_Channels =
-        {
-            Pwm_kChannelConfig0,
-            2u,
-        };
-    
-    /* Call the Pwm_Init API */
-    Pwm_Init(&Pwm_Channels);
 }
 
 #if (0)
