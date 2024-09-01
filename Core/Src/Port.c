@@ -13,6 +13,7 @@
 const Port_ConfigType *Port_kConfigPtr = NULL;
 
 /********************** [internal function declarations] **********************/
+static void Port_SetOutputConfig(const Port_PinConfigType* PinConfigPtr, uint32 regOffset);
 
 /*********************** [external function definition] ***********************/
 /**
@@ -70,17 +71,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
         {
             if(localPortConfigPtr->Direction == PORT_PIN_OUT)
             {
-                /* Configure open drain / push-pull register */
-                tempReg = localPortConfigPtr->ModReg->OTYPER;
-                tempReg &= (~(1U << offset));
-                tempReg |= (localPortConfigPtr->OutputMode << offset);
-                localPortConfigPtr->ModReg->OTYPER = tempReg;
-
-                /* Configure output speed register. ONLY LOW SPEED for the moment. */
-                tempReg = localPortConfigPtr->ModReg->OSPEEDR;
-                tempReg &= (~(GPIO_OSPEEDER_OSPEEDR0 << (offset * 2U)));
-                tempReg |= (SPEED_FREQ_LOW << (offset * 2U));
-                localPortConfigPtr->ModReg->OSPEEDR = tempReg;
+                Port_SetOutputConfig(localPortConfigPtr, offset);
             }
 
             tempReg = localPortConfigPtr->ModReg->PUPDR;
@@ -104,17 +95,7 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 
             if(localPortConfigPtr->Direction == PORT_PIN_OUT)
             {
-                /* Configure open drain / push-pull register */
-                tempReg = localPortConfigPtr->ModReg->OTYPER;
-                tempReg &= (~(1U << offset));
-                tempReg |= (localPortConfigPtr->OutputMode << offset);
-                localPortConfigPtr->ModReg->OTYPER = tempReg;
-
-                /* Configure output speed register. ONLY LOW SPEED for the moment. */
-                tempReg = localPortConfigPtr->ModReg->OSPEEDR;
-                tempReg &= (~(GPIO_OSPEEDER_OSPEEDR0 << (offset * 2U)));
-                tempReg |= (SPEED_FREQ_LOW << (offset * 2U));
-                localPortConfigPtr->ModReg->OSPEEDR = tempReg;
+                Port_SetOutputConfig(localPortConfigPtr, offset);
             }
 
             /* Configure pull-up / pull-down register */
@@ -134,6 +115,22 @@ void Port_Init(const Port_ConfigType *ConfigPtr)
 
         localPortConfigPtr++;
     }
+}
+
+static void Port_SetOutputConfig(const Port_PinConfigType* PinConfigPtr, uint32 regOffset)
+{
+    uint32 temp;
+    /* Configure open drain / push-pull register */
+    temp = PinConfigPtr->ModReg->OTYPER;
+    temp &= (~(1U << regOffset));
+    temp |= (PinConfigPtr->OutputMode << regOffset);
+    PinConfigPtr->ModReg->OTYPER = temp;
+
+    /* Configure output speed register. ONLY LOW SPEED for the moment. */
+    temp = PinConfigPtr->ModReg->OSPEEDR;
+    temp &= (~(GPIO_OSPEEDER_OSPEEDR0 << (regOffset * 2U)));
+    temp |= (SPEED_FREQ_LOW << (regOffset * 2U));
+    PinConfigPtr->ModReg->OSPEEDR = temp;
 }
 
 /**
