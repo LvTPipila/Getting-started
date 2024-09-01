@@ -179,6 +179,7 @@ static void MX_GPIO_Init(void)
     */
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     const Port_PinConfigType Port_kChannelConfig0 [] =
         {
             {
@@ -223,6 +224,8 @@ static void MX_GPIO_Init(void)
     Port_Init(&Port_ConfigPorts);
 =======
 >>>>>>> Move port and pwm init to IoHwAb
+=======
+>>>>>>> 7f02e36679a10b7b5605df086e044cc08ad6f2bc
 }
 
 /* USER CODE BEGIN 4 */
