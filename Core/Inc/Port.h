@@ -29,6 +29,12 @@
 #define PORT_PIN_15     ((Port_PinType)0x8000U)
 #define PORT_PIN_ALL    ((Port_PinType)0xFFFFU)
 
+/* Pin modes */
+#define ADC     ((Port_PinModeType)0U)
+#define DIO     ((Port_PinModeType)1U)
+#define PWM     ((Port_PinModeType)2U)
+#define SPI     ((Port_PinModeType)3U)
+
 /* Configuration mode of port pins */
 #define PIN_MODE_DIGITAL_INPUT  (0x0U)
 #define PIN_MODE_DIGITAL_OUTPUT (0x1U)
