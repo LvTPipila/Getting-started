@@ -11,7 +11,9 @@
 
 /************************** [variable declaration] ****************************/
 
-/********************** [external function declarations] **********************/
+/********************** [internal function declarations] **********************/
+
+/*********************** [external function definition] ***********************/
 /**
  * @brief Add a brief description of this function/interface.
  *
