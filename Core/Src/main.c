@@ -178,54 +178,6 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    const Port_PinConfigType Port_kChannelConfig0 [] =
-        {
-            {
-                LD2_Pin,
-                PORT_PIN_OUT,
-                DIO,
-                0U,
-                MODE_NO_PULL,
-                MODE_PUSH_PULL,
-                0U,
-                LD2_GPIO_Port
-            },
-            {
-                /* Configure GPIO pin for PWM on TIM16_CH1, PB4 */
-                GPIO_PIN_4,
-                PORT_PIN_OUT,
-                PWM,
-                AF_1,
-                MODE_NO_PULL,
-                MODE_PUSH_PULL,
-                GPIO_SPEED_FREQ_LOW,
-                GPIOB,
-            },
-            {
-                /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
-                GPIO_PIN_1,
-                PORT_PIN_OUT,
-                PWM,
-                AF_1,
-                MODE_NO_PULL,
-                MODE_PUSH_PULL,
-                GPIO_SPEED_FREQ_LOW,
-                GPIOA,
-            },
-        };
-
-    const Port_ConfigType Port_ConfigPorts =
-        {
-            Port_kChannelConfig0,
-            3U
-        };
-    Port_Init(&Port_ConfigPorts);
-=======
->>>>>>> Move port and pwm init to IoHwAb
-=======
->>>>>>> 7f02e36679a10b7b5605df086e044cc08ad6f2bc
 }
 
 /* USER CODE BEGIN 4 */

@@ -29,7 +29,7 @@ void IoHwAb_Init(void)
             {
                 LED_Pin,
                 PORT_PIN_OUT,
-                PIN_MODE_DIGITAL_OUTPUT,
+                DIO,
                 0U,
                 MODE_NO_PULL,
                 MODE_PUSH_PULL,
@@ -40,7 +40,7 @@ void IoHwAb_Init(void)
                 /* Configure GPIO pin for PWM on TIM16_CH1, PB4 */
                 PORT_PIN_4,
                 PORT_PIN_OUT,
-                PIN_MODE_ALTERNATE,
+                PWM,
                 AF_1,
                 MODE_NO_PULL,
                 MODE_PUSH_PULL,
@@ -51,7 +51,7 @@ void IoHwAb_Init(void)
                 /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
                 PORT_PIN_1,
                 PORT_PIN_OUT,
-                PIN_MODE_ALTERNATE,
+                PWM,
                 AF_1,
                 MODE_NO_PULL,
                 MODE_PUSH_PULL,
