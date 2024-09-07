@@ -41,6 +41,7 @@ Core/Src/stm32f3xx_hal_msp.c \
 Core/Src/system_stm32f3xx.c \
 Core/Src/Port.c \
 Core/Src/Pwm.c \
+Core/Src/IoHwAb.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal_tim_ex.c \
 Drivers/STM32F3xx_HAL_Driver/Src/stm32f3xx_hal.c \
