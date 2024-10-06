@@ -17,6 +17,9 @@ typedef uint32  Mcu_RawResetType;
 /* Type to specify the ID for a MCU mode */
 typedef uint32  Mcu_ModeType;
 
+/* Structure with clock settings. */
+typedef uint32  Mcu_ClockType;
+
 /* Subset of reset types. Dependent on hardware */
 typedef enum
 {
@@ -27,16 +30,18 @@ typedef enum
     /* More reset types can be added that are supported by hardware. */
 }Mcu_ResetType;
 
-/* Status value return for the PLL status */
+/* Status value return for the PLL status. */
 typedef enum
 {
     MCU_PLL_LOCKED = 0x00,
     MCU_PLL_UNLOCKED = 0x01,
     MCU_PLL_STATUS_UNDEFINED = 0x02
 }Mcu_PllStatusType;
-/* Structure to hold the MCU driver configuration */
+
+/* Structure to hold the MCU driver configuration. */
 typedef struct
 {
+    Mcu_ClockType ClockSettingID;
 }Mcu_ConfigType;
 /************************** [variable declaration] ****************************/
 
@@ -55,7 +60,22 @@ typedef struct
 void Mcu_Init(const Mcu_ConfigType* ConfigPtr);
 
 /**
- * @brief   Add a brief description of this function/interface.
+ * @brief   This service initializes the PLL and other MCU clock options.
+ *
+ * service ID   0x02
+ *
+ * param (in)   ClockSetting is the ID for the clock settings to be initialize.
+ *
+ * param (out)  none.
+ *
+ * retval   Std_ReturnType.
+ */
+Std_ReturnType Mcu_InitClock(Mcu_ClockType ClockSetting);
+
+/**
+ * @brief   This service initializes the MCU driver.
+ *
+ * service ID   0x00
  *
  * param (in)   Add description of parameter value.
  *
