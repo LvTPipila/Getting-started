@@ -10,6 +10,7 @@
 /********************************* [typedefs] *********************************/
 
 /************************** [variable declaration] ****************************/
+const Mcu_ConfigType* Mcu_kConfigPtr = NULL;
 
 /********************** [internal function declarations] **********************/
 
@@ -34,9 +35,30 @@
  */
 void Mcu_Init(const Mcu_ConfigType* ConfigPtr)
 {
-    // Configure the clock settings and the PLL
-    // Also, need to investigate how to generate reference point for the 
-    // pwm driver.
+    uint32 tempReg;
+    const Mcu_ConfigType* localMcuConfigPtr;
+
+    /* Also, need to investigate how to generate reference point for the pwm driver. */
+    if(ConfigPtr != NULL)
+    {
+        Mcu_kConfigPtr = ConfigPtr;
+        localMcuConfigPtr = ConfigPtr;
+    } else
+    {
+        return;
+    }
+
+    localMcuConfigPtr->ModReg->CR |= MCU_CR_HSION_MASK;
+    while((localMcuConfigPtr->ModReg->CR & MCU_CR_HSIRDY_MASK) != MCU_CR_HSIRDY_MASK)
+    {
+        /* Wait until HSI clock is ready. */
+    }
+    /* Calibrate HSI */
+    tempReg = localMcuConfigPtr->ModReg->CR;
+    tempReg &= ~(MCU_CR_HSITRIM_MASK);
+    tempReg |= (localMcuConfigPtr->CalibrationValue << MCU_CR_HSITRIM_POS);
+    localMcuConfigPtr->ModReg->CR = tempReg;
+
 }
 
 /**
@@ -58,7 +80,21 @@ void Mcu_Init(const Mcu_ConfigType* ConfigPtr)
  *
  * retval   Std_ReturnType.
  */
-Std_ReturnType Mcu_InitClock(Mcu_ClockType ClockSetting);
+Std_ReturnType Mcu_InitClock(Mcu_ClockType ClockSetting)
+{
+    uint32 tempReg;
+    const Mcu_ConfigType* localMcuConfigPtr;
+
+    /* Disable PLL and wait until PLLRDY is cleared. */
+    tempReg = Mcu_kConfigPtr->ModReg->CFGR;
+    tempReg &= (~(MCU_CFGR_PLLSRC_MASK));
+    /* CONFIG OF THE PLL
+     * Select PLL src and multiplication factor.
+     * Enable PLL.
+     */
+
+    /* Init clocks PCLK2 (APB2) for TIM16 */
+}
 
 /**
  * @brief Add a brief description of this function/interface.

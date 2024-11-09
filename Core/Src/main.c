@@ -51,7 +51,6 @@
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM_Init(void);
-//static void MX_TIM2_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -95,9 +94,6 @@ int main(void)
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     
-    /* Start the PWM TIM2_CH1 */
-    //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-
     while (1)
     {
         /* USER CODE END WHILE */
@@ -208,59 +204,6 @@ static void MX_TIM_Init(void)
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
 }
-
-#if (0)
-static void MX_TIM2_Init(void)
-{
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_OC_InitTypeDef TIM2_OC_InitStruct = {0};
-
-    /* Enable TIM2 clock */
-    __HAL_RCC_TIM2_CLK_ENABLE();
-
-    /* Start codignt the initialization of the TIM2 module for my PWM. */
-    TIM_Base_InitTypeDef TIM2_InitStruct = {0};
-
-    /* Configure values for the TIM2 init structure. */
-    TIM2_InitStruct.Prescaler = 0x1u;                   // Prescale 2.
-    TIM2_InitStruct.CounterMode = TIM_COUNTERMODE_UP;
-    TIM2_InitStruct.Period = 0xFFFFu;
-    TIM2_InitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    TIM2_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-    /* TIM_Base_SetConfig(TIM2, &TIM2_InitStruct); */
-    
-    /* Set parameters for TIM2 used as PWM */
-    htim2.Instance = TIM2;
-    htim2.Init = TIM2_InitStruct;
-    htim2.Channel = HAL_TIM_ACTIVE_CHANNEL_1;
-    /* Init TIM2 */
-    if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL; 
-    if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    /* Set params for PWM channel 2 */
-    TIM2_OC_InitStruct.OCMode = TIM_OCMODE_PWM1;
-    TIM2_OC_InitStruct.Pulse = (0xFFFFu >> 1u);      // Set duty cycle to 50%
-    TIM2_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
-    TIM2_OC_InitStruct.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-    TIM2_OC_InitStruct.OCFastMode = TIM_OCFAST_DISABLE;
-    /* Config OC channel 1 */
-    if(HAL_TIM_PWM_ConfigChannel(&htim2, &TIM2_OC_InitStruct, TIM_CHANNEL_1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-}
-#endif
 
 /* USER CODE END 4 */
 
