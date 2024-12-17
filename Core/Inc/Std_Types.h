@@ -16,6 +16,9 @@
 #define STATUSTYPEDEFINED
 #define E_OK                    0x00u
 
+#define CLEAR_BITS(REG, MASK)       ((REG) &= ~(MASK))
+#define WRITE_BITS(REG, VAL)        ((REG) |= (VAL))
+
 typedef unsigned char StatusType;
 #endif
 
