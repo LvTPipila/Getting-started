@@ -49,6 +49,7 @@
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 void SystemClock_Config(void);
+static void MX_SYSCLK_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM_Init(void);
 /* USER CODE END PFP */
@@ -78,7 +79,9 @@ int main(void)
     /* USER CODE END Init */
 
     /* Configure the system clock */
-    SystemClock_Config();
+
+    //SystemClock_Config();
+    MX_SYSCLK_Init();
 
     /* USER CODE BEGIN SysInit */
 
@@ -109,6 +112,7 @@ int main(void)
  * @brief System Clock Configuration
  * @retval None
  */
+#if (0)
 void SystemClock_Config(void)
 {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -135,10 +139,64 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+    if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
     {
         Error_Handler();
+    }
+
+}
+#endif
+
+static void MX_SYSCLK_Init(void)
+{
+    const Mcu_PllConfigType Mcu_PllConfigStruct =
+        {
+            0U,
+            0xEU,
+        };
+
+    const Mcu_ConfigType Mcu_InitStruct = 
+        {
+            &Mcu_PllConfigStruct,
+            RCC_OSCILLATORTYPE_HSI,
+            RCC_HSICALIBRATION_DEFAULT,
+            MCU_SYSCLKSRC_PLL,
+            RCC_SYSCLK_DIV1,
+            4U,
+            RCC_HCLK_DIV1,
+            RCC
+        };
+
+    Mcu_Init(&Mcu_InitStruct);
+
+    /* Increasing the number of wait states because of higher CPU frequency */
+    if(FLASH_LATENCY_2 > __HAL_FLASH_GET_LATENCY())
+    {    
+        /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
+        __HAL_FLASH_SET_LATENCY(FLASH_LATENCY_2);
+
+        /* Check that the new number of wait states is taken into account to access the Flash
+        memory by reading the FLASH_ACR register */
+        if(__HAL_FLASH_GET_LATENCY() != FLASH_LATENCY_2)
+        {
+            Error_Handler();
+        }
+    }
+
+    Mcu_InitClock((Mcu_ClockType)0);
+
+    /* Increasing the number of wait states because of higher CPU frequency */
+    if(FLASH_LATENCY_2 < __HAL_FLASH_GET_LATENCY())
+    {    
+        /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
+        __HAL_FLASH_SET_LATENCY(FLASH_LATENCY_2);
+
+        /* Check that the new number of wait states is taken into account to access the Flash
+        memory by reading the FLASH_ACR register */
+        if(__HAL_FLASH_GET_LATENCY() != FLASH_LATENCY_2)
+        {
+            Error_Handler();
+        }
     }
 }
 
@@ -152,9 +210,9 @@ static void MX_GPIO_Init(void)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
