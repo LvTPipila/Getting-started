@@ -39,6 +39,7 @@ Core/Src/main.c \
 Core/Src/stm32f3xx_it.c \
 Core/Src/stm32f3xx_hal_msp.c \
 Core/Src/system_stm32f3xx.c \
+Core/Src/Mcu.c \
 Core/Src/Port.c \
 Core/Src/Pwm.c \
 Core/Src/IoHwAb.c \
