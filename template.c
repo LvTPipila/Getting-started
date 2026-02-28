@@ -4,20 +4,24 @@
  */
 
 /********************************* [includes] *********************************/
-#include "template.h"
+#include "Template.h"
 /********************************** [macros] **********************************/
 
 /********************************* [typedefs] *********************************/
 
 /************************** [variable declaration] ****************************/
 
-/********************** [external function declarations] **********************/
+/********************** [internal function declarations] **********************/
+
+/*********************** [external function definition] ***********************/
 /**
  * @brief Add a brief description of this function/interface.
  *
- * param  Add description of parameter value.
+ * param (in)   Add description of parameter value.
  *
- * retval Add name description of return value.
+ * param (out)  Add description of parameter value.
+ *
+ * retval   Add name description of return value.
  */
 void template_fcn(void);
 /****************************** [end of file] *********************************/

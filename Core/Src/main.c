@@ -49,9 +49,9 @@
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
 void SystemClock_Config(void);
+static void MX_SYSCLK_Init(void);
 static void MX_GPIO_Init(void);
 static void MX_TIM_Init(void);
-//static void MX_TIM2_Init(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -79,7 +79,9 @@ int main(void)
     /* USER CODE END Init */
 
     /* Configure the system clock */
-    SystemClock_Config();
+
+    //SystemClock_Config();
+    MX_SYSCLK_Init();
 
     /* USER CODE BEGIN SysInit */
 
@@ -89,15 +91,12 @@ int main(void)
     MX_GPIO_Init();
     /* USER CODE BEGIN 2 */
     MX_TIM_Init();
-    //MX_TIM2_Init();
+    IoHwAb_Init();
     /* USER CODE END 2 */
 
     /* Infinite loop */
     /* USER CODE BEGIN WHILE */
     
-    /* Start the PWM TIM2_CH1 */
-    //HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
-
     while (1)
     {
         /* USER CODE END WHILE */
@@ -113,6 +112,7 @@ int main(void)
  * @brief System Clock Configuration
  * @retval None
  */
+#if (0)
 void SystemClock_Config(void)
 {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
@@ -139,10 +139,64 @@ void SystemClock_Config(void)
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
     RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
-
-    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+    if(HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
     {
         Error_Handler();
+    }
+
+}
+#endif
+
+static void MX_SYSCLK_Init(void)
+{
+    const Mcu_PllConfigType Mcu_PllConfigStruct =
+        {
+            0U,
+            0xEU,
+        };
+
+    const Mcu_ConfigType Mcu_InitStruct = 
+        {
+            &Mcu_PllConfigStruct,
+            RCC_OSCILLATORTYPE_HSI,
+            RCC_HSICALIBRATION_DEFAULT,
+            MCU_SYSCLKSRC_PLL,
+            RCC_SYSCLK_DIV1,
+            4U,
+            RCC_HCLK_DIV1,
+            RCC
+        };
+
+    Mcu_Init(&Mcu_InitStruct);
+
+    /* Increasing the number of wait states because of higher CPU frequency */
+    if(FLASH_LATENCY_2 > __HAL_FLASH_GET_LATENCY())
+    {    
+        /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
+        __HAL_FLASH_SET_LATENCY(FLASH_LATENCY_2);
+
+        /* Check that the new number of wait states is taken into account to access the Flash
+        memory by reading the FLASH_ACR register */
+        if(__HAL_FLASH_GET_LATENCY() != FLASH_LATENCY_2)
+        {
+            Error_Handler();
+        }
+    }
+
+    Mcu_InitClock((Mcu_ClockType)0);
+
+    /* Increasing the number of wait states because of higher CPU frequency */
+    if(FLASH_LATENCY_2 < __HAL_FLASH_GET_LATENCY())
+    {    
+        /* Program the new number of wait states to the LATENCY bits in the FLASH_ACR register */
+        __HAL_FLASH_SET_LATENCY(FLASH_LATENCY_2);
+
+        /* Check that the new number of wait states is taken into account to access the Flash
+        memory by reading the FLASH_ACR register */
+        if(__HAL_FLASH_GET_LATENCY() != FLASH_LATENCY_2)
+        {
+            Error_Handler();
+        }
     }
 }
 
@@ -156,10 +210,9 @@ static void MX_GPIO_Init(void)
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
     /* GPIO Ports Clock Enable */
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-    //__HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 
     /*Configure GPIO pin Output Level */
     HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
@@ -179,28 +232,6 @@ static void MX_GPIO_Init(void)
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
 
-    /*Configure GPIO pin : LD2_Pin */
-    GPIO_InitStruct.Pin = LD2_Pin;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
-
-    /*Configure GPIO pin for PWM on TIM16_CH1, PB4 */
-    GPIO_InitStruct.Pin = GPIO_PIN_4;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM16;
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
-    GPIO_InitStruct.Pin = GPIO_PIN_1;
-    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-    GPIO_InitStruct.Pull = GPIO_NOPULL;     // If this doesn't work try GPIO_PULLUP
-    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-    GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 /* USER CODE BEGIN 4 */
@@ -217,7 +248,7 @@ static void MX_TIM_Init(void)
 
     TIM2_InitStruct.Prescaler = 0x1u;                   // Prescale 2.
     TIM2_InitStruct.CounterMode = TIM_COUNTERMODE_UP;
-    TIM2_InitStruct.Period = 0xF;
+    TIM2_InitStruct.Period = (Pwm_PeriodType) 0xF;
     TIM2_InitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
     TIM2_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM2, &TIM2_InitStruct);
@@ -230,92 +261,7 @@ static void MX_TIM_Init(void)
     TIM16_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
-    const Pwm_ChannelConfigType Pwm_kChannelConfig0[ ] =
-        {
-            {
-                2u,
-                PWM_CC_SELECT_OUTPUT,
-                PWM_MODE_1,
-                PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
-                PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 3),
-                TIM2
-            },
-            {
-                1u,
-                PWM_CC_SELECT_OUTPUT,
-                PWM_MODE_1,
-                PWM_PRELOAD_ENABLE,
-                (0xFFFFu),
-                PWM_CC_ACTIVE_HIGH,
-                (0x8000u >> 2),
-                TIM16
-            },
-        };
-
-    const Pwm_ConfigType Pwm_Channels =
-        {
-            Pwm_kChannelConfig0,
-            2u,
-        };
-    
-    /* Call the Pwm_Init API */
-    Pwm_Init(&Pwm_Channels);
 }
-
-#if (0)
-static void MX_TIM2_Init(void)
-{
-    TIM_ClockConfigTypeDef sClockSourceConfig = {0};
-    TIM_OC_InitTypeDef TIM2_OC_InitStruct = {0};
-
-    /* Enable TIM2 clock */
-    __HAL_RCC_TIM2_CLK_ENABLE();
-
-    /* Start codignt the initialization of the TIM2 module for my PWM. */
-    TIM_Base_InitTypeDef TIM2_InitStruct = {0};
-
-    /* Configure values for the TIM2 init structure. */
-    TIM2_InitStruct.Prescaler = 0x1u;                   // Prescale 2.
-    TIM2_InitStruct.CounterMode = TIM_COUNTERMODE_UP;
-    TIM2_InitStruct.Period = 0xFFFFu;
-    TIM2_InitStruct.ClockDivision = TIM_CLOCKDIVISION_DIV1;
-    TIM2_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
-    /* TIM_Base_SetConfig(TIM2, &TIM2_InitStruct); */
-    
-    /* Set parameters for TIM2 used as PWM */
-    htim2.Instance = TIM2;
-    htim2.Init = TIM2_InitStruct;
-    htim2.Channel = HAL_TIM_ACTIVE_CHANNEL_1;
-    /* Init TIM2 */
-    if (HAL_TIM_Base_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL; 
-    if (HAL_TIM_ConfigClockSource(&htim2, &sClockSourceConfig) != HAL_OK)
-    {
-        Error_Handler();
-    }
-    if (HAL_TIM_PWM_Init(&htim2) != HAL_OK)
-    {
-        Error_Handler();
-    }
-
-    /* Set params for PWM channel 2 */
-    TIM2_OC_InitStruct.OCMode = TIM_OCMODE_PWM1;
-    TIM2_OC_InitStruct.Pulse = (0xFFFFu >> 1u);      // Set duty cycle to 50%
-    TIM2_OC_InitStruct.OCPolarity = TIM_OCPOLARITY_HIGH;
-    TIM2_OC_InitStruct.OCNPolarity = TIM_OCNPOLARITY_HIGH;
-    TIM2_OC_InitStruct.OCFastMode = TIM_OCFAST_DISABLE;
-    /* Config OC channel 1 */
-    if(HAL_TIM_PWM_ConfigChannel(&htim2, &TIM2_OC_InitStruct, TIM_CHANNEL_1) != HAL_OK)
-    {
-        Error_Handler();
-    }
-}
-#endif
 
 /* USER CODE END 4 */
 

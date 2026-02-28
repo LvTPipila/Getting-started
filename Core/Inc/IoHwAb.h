@@ -1,14 +1,16 @@
 /******************************** [general info] ******************************/
 /*
- * File:    Template.h
+ * File:    IoHwAb.h
  */
 
-#ifndef TEMPLATE_H
-#define TEMPLATE_H
+#ifndef IO_HW_AB_H
+#define IO_HW_AB_H
 /********************************* [includes] *********************************/
-
+#include "stm32f302x8.h"
+#include "Port.h"
+#include "Pwm.h"
 /******************************* [global macros] ******************************/
-
+#define LED_Pin     PORT_PIN_13
 /****************************** [global typedefs] *****************************/
 
 /************************** [variable declaration] ****************************/
@@ -23,6 +25,6 @@
  *
  * retval   Add name description of return value.
  */
-void template_fcn(void);
-#endif /* if !define(TEMPLATE_H) */
+void IoHwAb_Init(void);
+#endif /* if !define(IO_HW_AB_H) */
 /****************************** [end of file] *********************************/
