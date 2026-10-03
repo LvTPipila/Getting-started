@@ -154,6 +154,11 @@ Std_ReturnType Mcu_InitClock(Mcu_ClockType ClockSetting)
  */
 Std_ReturnType Mcu_DistributePllClock(void)
 {
+    while(((Mcu_kConfigPtr->ModReg->CR & MCU_CR_PLLRDY_MASK) >> MCU_CR_PLLRDY_POS) == 0)
+    {
+        /* Wait until PLL is locked. */
+    }
+
     return E_OK;
 }
 

@@ -151,8 +151,8 @@ static void MX_SYSCLK_Init(void)
 {
     const Mcu_PllConfigType Mcu_PllConfigStruct =
         {
-            0U,
-            0xEU,
+            0U,   // Pll source
+            0xEU, // Pll multiplier
         };
 
     const Mcu_ConfigType Mcu_InitStruct = 
@@ -162,8 +162,8 @@ static void MX_SYSCLK_Init(void)
             RCC_HSICALIBRATION_DEFAULT,
             MCU_SYSCLKSRC_PLL,
             RCC_SYSCLK_DIV1,
-            4U,
-            RCC_HCLK_DIV1,
+            2U,             // APB1 prescaler
+            RCC_HCLK_DIV1,  // APB2 prescaler
             RCC
         };
 
@@ -184,6 +184,7 @@ static void MX_SYSCLK_Init(void)
     }
 
     Mcu_InitClock((Mcu_ClockType)0);
+    Mcu_DistributePllClock();
 
     /* Increasing the number of wait states because of higher CPU frequency */
     if(FLASH_LATENCY_2 < __HAL_FLASH_GET_LATENCY())
