@@ -1,0 +1,27 @@
+/******************************* [general info] *******************************/
+/*
+ * File:    Adc.c
+ */
+
+/********************************* [includes] *********************************/
+#include "Adc.h"
+/********************************** [macros] **********************************/
+
+/********************************* [typedefs] *********************************/
+
+/************************** [variable declaration] ****************************/
+
+/********************** [internal function declarations] **********************/
+
+/*********************** [external function definition] ***********************/
+/**
+ * @brief Add a brief description of this function/interface.
+ *
+ * param (in)   Add description of parameter value.
+ *
+ * param (out)  Add description of parameter value.
+ *
+ * retval   Add name description of return value.
+ */
+void template_fcn(void);
+/****************************** [end of file] *********************************/
