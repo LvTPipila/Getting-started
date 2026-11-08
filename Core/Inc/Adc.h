@@ -10,12 +10,43 @@
 #include "stm32f302x8.h"
 
 /******************************* [global macros] ******************************/
+/* Defining the masks for the Control Register. */
+#define MCU_CR_HSION_POS        (0U)
+#define MCU_CR_HSION_MASK       (0x01U << MCU_CR_HSION_POS)
+
+/* Defining the masks for the Common Control Register. */
+#define ADC_CCR_DUAL_POS        (0U)
+#define ADC_CCR_DUAL_MASK       (0x1FU << ADC_CCR_DUAL_POS)
+
+#define ADC_CCR_DELAY_POS       (8U)
+#define ADC_CCR_DELAY_MASK      (0x0FU << ADC_CCR_DELAY_POS)
+
+#define ADC_CCR_DMACFG_POS      (13U)
+#define ADC_CCR_DMACFG_MASK     (0x01U << ADC_CCR_DMACFG_POS)
+
+#define ADC_CCR_MDMA_POS        (14U)
+#define ADC_CCR_MDMA_MASK       (0x03U << ADC_CCR_MDMA_POS)
+
+#define ADC_CCR_CKMOD_POS       (16U)
+#define ADC_CCR_CKMOD_MASK      (0x03U << ADC_CCR_CKMOD_POS)
+
+#define ADC_CCR_VREFEN_POS      (22U)
+#define ADC_CCR_VREFEN_MASK     (0x03U << ADC_CCR_VREFEN_POS)
+
+#define ADC_CCR_TSEN_POS        (23U)
+#define ADC_CCR_TSEN_MASK       (0x03U << ADC_CCR_TSEN_POS)
+
+#define ADC_CCR_VBATEN_POS      (24U)
+#define ADC_CCR_VBATEN_MASK     (0x03U << ADC_CCR_VBATEN_POS)
 
 /****************************** [global typedefs] *****************************/
 /* Structure with config parameters to initialize ADC driver and ADC HW unit. */
 typedef struct
 {
     /* Structure params ADC config. */
+    // para for the clock source
+    ADC_TypeDef* ModReg;
+    ADC_Common_TypeDef* ComModReg;
 }Adc_ConfigType;
 
 /* Numeric ID of an ADC channel. */
