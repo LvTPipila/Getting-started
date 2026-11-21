@@ -79,19 +79,17 @@ int main(void)
     /* USER CODE END Init */
 
     /* Configure the system clock */
-
     //SystemClock_Config();
-    MX_SYSCLK_Init();
 
     /* USER CODE BEGIN SysInit */
-
+    MX_SYSCLK_Init();
     /* USER CODE END SysInit */
 
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
+
     /* USER CODE BEGIN 2 */
     MX_TIM_Init();
-    IoHwAb_Init();
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -151,20 +149,20 @@ static void MX_SYSCLK_Init(void)
 {
     const Mcu_PllConfigType Mcu_PllConfigStruct =
         {
-            0U,   // Pll source
-            0xEU, // Pll multiplier
+            .PllSource = 0U, 
+            .PllMultiplier = 0xEU
         };
 
     const Mcu_ConfigType Mcu_InitStruct = 
         {
-            &Mcu_PllConfigStruct,
-            RCC_OSCILLATORTYPE_HSI,
-            RCC_HSICALIBRATION_DEFAULT,
-            MCU_SYSCLKSRC_PLL,
-            RCC_SYSCLK_DIV1,
-            2U,             // APB1 prescaler
-            RCC_HCLK_DIV1,  // APB2 prescaler
-            RCC
+            .PllConfigPtr = &Mcu_PllConfigStruct,
+            .OscType = RCC_OSCILLATORTYPE_HSI,
+            .CalibrationValue = RCC_HSICALIBRATION_DEFAULT,
+            .SysClockSource = MCU_SYSCLKSRC_PLL,
+            .HwClkPre = RCC_SYSCLK_DIV1,
+            .APB1Pre = 2U,             // APB1 prescaler
+            .APB2Pre = RCC_HCLK_DIV1,  // APB2 prescaler
+            .ModReg = RCC
         };
 
     Mcu_Init(&Mcu_InitStruct);
@@ -232,7 +230,6 @@ static void MX_GPIO_Init(void)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
     */
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -262,6 +259,82 @@ static void MX_TIM_Init(void)
     TIM16_InitStruct.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
     TIM_Base_SetConfig(TIM16, &TIM16_InitStruct);
 
+    /* Initialize port driver. */
+    const Port_PinConfigType Port_kChannelConfig0[] =
+        {
+            {
+                .Pin = LED_Pin,
+                .Direction = PORT_PIN_OUT,
+                .PinMode = DIO,
+                .Alternate = 0U,
+                .PullMode = MODE_NO_PULL,
+                .OutputMode = MODE_PUSH_PULL,
+                .Speed = 0U,
+                .ModReg = GPIOB,
+            },
+            {
+                /* Configure GPIO pin for PWM on TIM16_CH1, PB4 */
+                .Pin = PORT_PIN_4,
+                .Direction = PORT_PIN_OUT,
+                .PinMode = PWM,
+                .Alternate = AF_1,
+                .PullMode = MODE_NO_PULL,
+                .OutputMode = MODE_PUSH_PULL,
+                .Speed = SPEED_FREQ_LOW,
+                .ModReg = GPIOB,
+            },
+            {
+                /*Configure GPIO pin for PWM on TIM2_CH2, PA1 */
+                .Pin = PORT_PIN_1,
+                .Direction = PORT_PIN_OUT,
+                .PinMode = PWM,
+                .Alternate = AF_1,
+                .PullMode = MODE_NO_PULL,
+                .OutputMode = MODE_PUSH_PULL,
+                .Speed = SPEED_FREQ_LOW,
+                .ModReg = GPIOA,
+            },
+        };
+
+    const Port_ConfigType Port_ConfigPorts =
+        {
+            .PinConfigPtr = Port_kChannelConfig0,
+            .PortMaxConfigPins = 3U
+        };
+
+    Port_Init(&Port_ConfigPorts);
+
+    /* Initialize pwm driver. */
+    const Pwm_ChannelConfigType Pwm_kChannelConfig0[ ] =
+        {
+            {
+                .HwChannel = 2u,
+                .CompareMode = PWM_CC_SELECT_OUTPUT,
+                .Mode = PWM_MODE_1,
+                .PreloadEnable = PWM_PRELOAD_ENABLE,
+                .Period = (0xFFFFu), // Period
+                .Polarity = PWM_CC_ACTIVE_HIGH,
+                .DutyCycle = (0x8000u >> 3),
+                .ModReg = TIM2
+            },
+            {
+                .HwChannel = 1u,
+                .CompareMode = PWM_CC_SELECT_OUTPUT,
+                .Mode = PWM_MODE_1,
+                .PreloadEnable = PWM_PRELOAD_ENABLE,
+                .Period = (0xFFFFu), // Period
+                .Polarity = PWM_CC_ACTIVE_HIGH,
+                .DutyCycle = (0x8000u >> 2),
+                .ModReg = TIM16
+            },
+        };
+
+    const Pwm_ConfigType Pwm_Channels =
+        {
+            .ChannelConfigPtr = Pwm_kChannelConfig0,
+            .PwmMaxChannels = 2u,
+        };
+    Pwm_Init(&Pwm_Channels);
 }
 
 /* USER CODE END 4 */
